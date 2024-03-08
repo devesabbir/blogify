@@ -1,10 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import NavigateTo from "./NavigateTo";
-import { useAuth } from "../hooks/useAuth";
+import useAuthContext from "../hooks/useAuthContext";
 
 export default function PrivateRoute({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuthContext();
 
   const redirectTo = "/login";
 

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 import Loader from "../components/common/Loader";
 
 export default function NavigateTo({ redirectTo }) {
   const [loader, setLoader] = useState(1);
+  const location = useLocation();
 
   useEffect(() => {
     let timer = setInterval(() => {
@@ -18,5 +19,13 @@ export default function NavigateTo({ redirectTo }) {
     };
   }, [loader]);
 
-  return loader ? <Loader /> : <Navigate to={redirectTo} replace />;
+  return loader ? (
+    <Loader />
+  ) : (
+    <Navigate
+      to={location.state ? location.state : redirectTo}
+      state={location.pathname}
+      replace
+    />
+  );
 }

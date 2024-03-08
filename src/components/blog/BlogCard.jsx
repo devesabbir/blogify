@@ -46,7 +46,7 @@ export default function BlogCard({ blog }) {
             </div>
             <div>
               <h5 className="text-slate-500 text-sm">
-                <Link to="/profile">
+                <Link to={`/profile/${author?.id}`}>
                   {author?.firstName} {author?.lastName}
                 </Link>
               </h5>

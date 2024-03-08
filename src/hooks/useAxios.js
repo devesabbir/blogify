@@ -31,7 +31,10 @@ const useAxios = () => {
       },
       async (error) => {
         const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (
+          error.response.status === 401 ||
+          (error.response.status === 403 && !originalRequest._retry)
+        ) {
           originalRequest._retry = true;
           const refreshToken = auth?.token?.refreshToken;
           const response = await axios.post(
@@ -50,6 +53,7 @@ const useAxios = () => {
             ...prev,
             token: { ...prev.token, accessToken: accessToken },
           }));
+
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return axios(originalRequest);
         }
@@ -63,7 +67,7 @@ const useAxios = () => {
       api.interceptors.request.eject(requestIntercept);
       api.interceptors.response.eject(responseIntercept);
     };
-  }, [auth?.token?.accessToken, auth?.token?.refreshToken, setAuth]);
+  }, [auth?.token?.accessToken, auth?.token?.refreshToken, setAuth, setValue]);
 
   return { api };
 };

@@ -1,35 +1,40 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import BlogCard from "../components/blog/BlogCard";
 import Layout from "../components/common/Layout";
 import SideBar from "../components/common/SideBar";
 import axios from "axios";
-import loaderImage from "./../assets/loader2.gif";
+//import loaderImage from "./../assets/loader2.gif";
+import useBlog from "../hooks/useBlog";
+import { actions } from "./../actions/index";
+import loaderImg from "./../assets/loader.gif";
 
 const blogsPerPage = 5;
 
 export default function HomePage() {
-  const [blogs, setBlogs] = useState([]);
+  const { state, dispatch } = useBlog();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef(null);
 
-  const fetchBlogs = async (page) => {
-    const res = await axios.get(
-      `${import.meta.env.VITE_SERVER_BASE_URL}/blogs?page=${page}&limit=${
-        page * blogsPerPage
-      }`
-    );
+  const fetchBlogs = useCallback(
+    async (page) => {
+      const res = await axios.get(
+        `${
+          import.meta.env.VITE_SERVER_BASE_URL
+        }/blogs?page=${page}&limit=${blogsPerPage}`
+      );
 
-    const data = res.data;
+      const data = res.data;
 
-    if (data?.blogs?.length === 0) {
-      setHasMore(false);
-    } else {
-      // eslint-disable-next-line no-unsafe-optional-chaining
-      setBlogs((prev) => [...prev, ...data?.blogs]);
-      setPage((prev) => prev + 1);
-    }
-  };
+      if (data?.blogs?.length === 0) {
+        setHasMore(false);
+      } else {
+        dispatch({ type: actions.blog.DATA_FETCHED, data: data?.blogs });
+        setPage((prev) => prev + 1);
+      }
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     const onIntersection = (items) => {
@@ -49,7 +54,7 @@ export default function HomePage() {
     return () => {
       if (observer) observer.disconnect();
     };
-  }, [hasMore, page]);
+  }, [fetchBlogs, hasMore, page]);
 
   return (
     <Layout>
@@ -58,7 +63,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
             {/* Blog Contents */}
             <div className="space-y-3 md:col-span-5">
-              {blogs?.map((item) => (
+              {state?.blogs?.map((item) => (
                 <BlogCard key={item.id} blog={item} />
               ))}
 
@@ -67,7 +72,7 @@ export default function HomePage() {
                   ref={loaderRef}
                   className="flex items-center justify-center"
                 >
-                  <img src={loaderImage} alt="loader" />
+                  <img className="w-14" src={loaderImg} alt="loader" />
                 </div>
               )}
             </div>
