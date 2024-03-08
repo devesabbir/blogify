@@ -18,19 +18,23 @@ export default function HomePage() {
 
   const fetchBlogs = useCallback(
     async (page) => {
-      const res = await axios.get(
-        `${
-          import.meta.env.VITE_SERVER_BASE_URL
-        }/blogs?page=${page}&limit=${blogsPerPage}`
-      );
+      try {
+        const res = await axios.get(
+          `${
+            import.meta.env.VITE_SERVER_BASE_URL
+          }/blogs?page=${page}&limit=${blogsPerPage}`
+        );
 
-      const data = res.data;
+        const data = res.data;
 
-      if (data?.blogs?.length === 0) {
+        if (data?.blogs?.length === 0) {
+          setHasMore(false);
+        } else {
+          dispatch({ type: actions.blog.DATA_FETCHED, data: data?.blogs });
+          setPage((prev) => prev + 1);
+        }
+      } catch (error) {
         setHasMore(false);
-      } else {
-        dispatch({ type: actions.blog.DATA_FETCHED, data: data?.blogs });
-        setPage((prev) => prev + 1);
       }
     },
     [dispatch]
