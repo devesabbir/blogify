@@ -5,7 +5,7 @@ import React from "react";
 export default function Field({ label, htmlFor, children, error }) {
   const id = htmlFor || getChildId(children);
   return (
-    <div className="form-control">
+    <div className="block mb-2">
       {label && (
         <label htmlFor={id} className="auth-label">
           {label}

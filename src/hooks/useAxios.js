@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import useAuth from "./useAuth";
 import { api } from "../api";
 import axios from "axios";
 
+import useAuthContext from "./useAuthContext";
+
 const useAxios = () => {
-  const { auth, setAuth } = useAuth();
+  const { auth, setAuth } = useAuthContext();
 
   useEffect(() => {
     //  intercept with request

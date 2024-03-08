@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
+import useLocalStorage from "./useLocalStorage";
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [auth, setAuth] = useState({});
+  const { value } = useLocalStorage("auth");
 
-  // Implement authentication logic here (e.g., check token storage, make API calls)
   useEffect(() => {
-    // ... Authentication logic
-    setIsAuthenticated(true);
-  }, []);
+    if (value?.token) {
+      setIsAuthenticated(true);
+      setAuth(value);
+    }
+  }, [value, value?.token]);
 
-  return { isAuthenticated, setIsAuthenticated };
+  return { isAuthenticated, setIsAuthenticated, auth, setAuth };
 }

@@ -1,7 +1,56 @@
+import { useEffect, useRef, useState } from "react";
 import BlogCard from "../components/blog/BlogCard";
 import Layout from "../components/common/Layout";
+import SideBar from "../components/common/SideBar";
+import axios from "axios";
+import loaderImage from "./../assets/loader2.gif";
+
+const blogsPerPage = 5;
 
 export default function HomePage() {
+  const [blogs, setBlogs] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef(null);
+
+  const fetchBlogs = async (page) => {
+    const res = await axios.get(
+      `${import.meta.env.VITE_SERVER_BASE_URL}/blogs?page=${page}&limit=${
+        page * blogsPerPage
+      }`
+    );
+
+    const data = res.data;
+
+    if (data?.blogs?.length === 0) {
+      setHasMore(false);
+    } else {
+      // eslint-disable-next-line no-unsafe-optional-chaining
+      setBlogs((prev) => [...prev, ...data?.blogs]);
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    const onIntersection = (items) => {
+      const loaderItem = items[0];
+
+      if (loaderItem.isIntersecting && hasMore) {
+        fetchBlogs(page);
+      }
+    };
+
+    const observer = new IntersectionObserver(onIntersection);
+
+    if (observer && loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (observer) observer.disconnect();
+    };
+  }, [hasMore, page]);
+
   return (
     <Layout>
       <section>
@@ -9,102 +58,21 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
             {/* Blog Contents */}
             <div className="space-y-3 md:col-span-5">
-              <BlogCard />
-              <BlogCard />
-              <BlogCard />
-              <BlogCard />
-              <BlogCard />
-              <BlogCard />
+              {blogs?.map((item) => (
+                <BlogCard key={item.id} blog={item} />
+              ))}
+
+              {hasMore && (
+                <div
+                  ref={loaderRef}
+                  className="flex items-center justify-center"
+                >
+                  <img src={loaderImage} alt="loader" />
+                </div>
+              )}
             </div>
             {/* Sidebar */}
-            <div className="md:col-span-2 h-full w-full space-y-5">
-              <div className="sidebar-card">
-                <h3 className="text-slate-300 text-xl lg:text-2xl font-semibold">
-                  Most Popular 👍️
-                </h3>
-                <ul className="space-y-5 my-5">
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      by
-                      <a href="./profile.html">Saad Hasan</a>
-                      <span>·</span> 100 Likes
-                    </p>
-                  </li>
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      by
-                      <a href="./profile.html">Saad Hasan</a>
-                      <span>·</span> 100 Likes
-                    </p>
-                  </li>
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      by
-                      <a href="./profile.html">Saad Hasan</a>
-                      <span>·</span> 100 Likes
-                    </p>
-                  </li>
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      by
-                      <a href="./profile.html">Saad Hasan</a>
-                      <span>·</span> 100 Likes
-                    </p>
-                  </li>
-                </ul>
-              </div>
-              <div className="sidebar-card">
-                <h3 className="text-slate-300 text-xl lg:text-2xl font-semibold">
-                  Your Favourites ❤️
-                </h3>
-                <ul className="space-y-5 my-5">
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      #tailwindcss, #server, #ubuntu
-                    </p>
-                  </li>
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      #tailwindcss, #server, #ubuntu
-                    </p>
-                  </li>
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      #tailwindcss, #server, #ubuntu
-                    </p>
-                  </li>
-                  <li>
-                    <h3 className="text-slate-400 font-medium hover:text-slate-300 transition-all cursor-pointer">
-                      How to Auto Deploy a Next.js App on Ubuntu from GitHub
-                    </h3>
-                    <p className="text-slate-600 text-sm">
-                      #tailwindcss, #server, #ubuntu
-                    </p>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <SideBar />
           </div>
         </div>
       </section>

@@ -1,80 +1,84 @@
 import { useForm } from "react-hook-form";
-import Field from "../common/Field";
-import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+import useLocalStorage from "../../hooks/useLocalStorage";
+
+import { Link } from "react-router-dom";
 import axios from "axios";
+import Field from "./../common/Field";
+import useAuthContext from "../../hooks/useAuthContext";
 
 export default function LoginForm() {
   const {
     register,
     formState: { errors },
     handleSubmit,
-    setError,
   } = useForm();
+  const { setIsAuthenticated, setAuth } = useAuthContext();
+  const { setValue } = useLocalStorage("auth");
 
-  const navigate = useNavigate();
-  const { setAuth } = useAuth();
-
-  const submitForm = async (formData) => {
+  const handleLogin = async (data) => {
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_SERVER_BASE_URL}/auth/login`,
-        formData
+        data
       );
-      //const { user, token } = response.data;
-      // login({ user, token: token.token, refreshToken: token.refreshToken });
-      setAuth(response.data);
-      navigate("/");
+      if (res.status === 200) {
+        setValue(res.data);
+        setAuth(res.data);
+        let timer = setTimeout(() => {
+          setIsAuthenticated(true);
+        }, 1000);
+
+        return () => {
+          clearTimeout(timer);
+        };
+      }
     } catch (error) {
-      setError("authentication", error);
+      console.log(error);
     }
   };
 
   return (
-    <form
-      className="border-b border-[#3F3F3F] pb-10 lg:pb-[60px]"
-      onSubmit={handleSubmit(submitForm)}
-    >
-      <Field label="Email" error={errors.email}>
-        <input
-          {...register("email", { required: "Email ID is Required" })}
-          className={`auth-input ${
-            errors.email ? "border-red-500" : "border-gray-200"
-          }`}
-          type="email"
-          name="email"
-          id="email"
-        />
-      </Field>
-
-      <Field label="Password" error={errors.password}>
-        <input
-          {...register("password", {
-            required: "Password is required",
-            minLength: {
-              value: 8,
-              message: "Your password must be at least 8 characters",
-            },
-          })}
-          className={`auth-input ${
-            errors.password ? "border-red-500" : "border-gray-200"
-          }`}
-          type="password"
-          name="password"
-          id="password"
-        />
-      </Field>
-      {errors && (
-        <div role="alert" className="text-red-600">
-          {errors.authentication?.message}
-        </div>
-      )}
-
-      <Field>
-        <button className="auth-input bg-lwsGreen font-bold text-deepDark transition-all hover:opacity-90">
+    <form onSubmit={handleSubmit(handleLogin)}>
+      <div className="mb-6">
+        <Field label="Email" error={errors.email}>
+          <input
+            {...register("email", {
+              required: "Email is required!",
+            })}
+            type="email"
+            id="email"
+            name="email"
+            className="w-full p-3 bg-[#030317] border border-white/20 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </Field>
+      </div>
+      <div className="mb-6">
+        <Field label="Password" error={errors.password}>
+          <input
+            {...register("password", {
+              required: "Passwords is required!",
+            })}
+            type="password"
+            id="password"
+            name="password"
+            className="w-full p-3 bg-[#030317] border border-white/20 rounded-md focus:outline-none focus:border-indigo-500"
+          />
+        </Field>
+      </div>
+      <div className="mb-6">
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 transition-all duration-200"
+        >
           Login
         </button>
-      </Field>
+      </div>
+      <p className="text-center">
+        Don&apos;t have an account?{" "}
+        <Link to="/register" className="text-indigo-600 hover:underline">
+          Register
+        </Link>
+      </p>
     </form>
   );
 }

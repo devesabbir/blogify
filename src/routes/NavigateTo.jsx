@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import loaderImage from "./../assets/loader.gif";
+
+import Loader from "../components/common/Loader";
 
 export default function NavigateTo({ redirectTo }) {
   const [loader, setLoader] = useState(1);
@@ -17,11 +18,5 @@ export default function NavigateTo({ redirectTo }) {
     };
   }, [loader]);
 
-  return loader ? (
-    <div className="h-[100vh] grid place-items-center">
-      <img src={loaderImage} alt="" />
-    </div>
-  ) : (
-    <Navigate to={redirectTo} replace />
-  );
+  return loader ? <Loader /> : <Navigate to={redirectTo} replace />;
 }
