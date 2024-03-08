@@ -8,17 +8,7 @@ import formatDate from "../../utils/formateDate";
 export default function BlogCard({ blog }) {
   const { auth } = useAuthContext();
 
-  const {
-    id,
-    title,
-    content,
-    thumbnail,
-    author,
-
-    likes,
-
-    createdAt,
-  } = blog;
+  const { id, title, content, thumbnail, author, likes, createdAt } = blog;
 
   const firstLetter = author?.firstName[0];
 
