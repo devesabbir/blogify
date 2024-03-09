@@ -5,6 +5,7 @@ export const initialState = {
   error: null,
   blogs: [],
   singleBlog: {},
+  popularBlogs: [],
 };
 
 export const BlogReducer = (state, action) => {
@@ -35,6 +36,24 @@ export const BlogReducer = (state, action) => {
         loading: false,
         singleBlog: { ...state.singleBlog, ...action.data },
       };
+
+    case actions.blog.BLOG_LIKED:
+      return {
+        ...state,
+        loading: false,
+        singleBlog: {
+          ...state.singleBlog,
+          likes: [...action.data],
+        },
+      };
+
+    case actions.blog.DATA_POPULAR_FETCHED:
+      return {
+        ...state,
+        loading: false,
+        popularBlogs: [...action.data],
+      };
+
     default:
       return state;
   }

@@ -4,13 +4,12 @@ import threeDotsIcon from "./../../assets/icons/3dots.svg";
 import { Link } from "react-router-dom";
 import useAuthContext from "../../hooks/useAuthContext";
 import formatDate from "../../utils/formateDate";
+import { useAvatar } from "../../hooks/useAvatar";
 
 export default function BlogCard({ blog }) {
   const { auth } = useAuthContext();
-
   const { id, title, content, thumbnail, author, likes, createdAt } = blog;
-
-  const firstLetter = author?.firstName[0];
+  const { avatarUrl, firstLetter } = useAvatar(author);
 
   return (
     <div className="blog-card">
@@ -37,7 +36,7 @@ export default function BlogCard({ blog }) {
                   className="w-10 h-10 rounded-full"
                   src={`${
                     import.meta.env.VITE_SERVER_BASE_URL
-                  }/uploads/avatar/${author?.avatar}`}
+                  }/uploads/avatar/${avatarUrl}`}
                   alt={author?.firstName}
                 />
               ) : (

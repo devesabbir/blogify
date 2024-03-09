@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import Comment from "./Comment";
-import BlogActions from "./BlogActions";
+
 import useAxios from "../../hooks/useAxios";
 import { useParams } from "react-router-dom";
 import useAuthContext from "../../hooks/useAuthContext";
 import useBlog from "../../hooks/useBlog";
 import { actions } from "../../actions";
+import BlogActions from "./BlogActions";
 
 export default function Comments({ comments }) {
   const { isAuthenticated, auth } = useAuthContext();
@@ -33,7 +34,7 @@ export default function Comments({ comments }) {
     <section id="comments">
       <div className="mx-auto w-full md:w-10/12 container">
         <h2 className="text-3xl font-bold my-8">
-          Comments ({comments?.length})
+          Comments ({comments?.length ?? 0})
         </h2>
         <div className="flex items -center space-x-4">
           {isAuthenticated && (

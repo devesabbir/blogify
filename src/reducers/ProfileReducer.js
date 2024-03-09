@@ -4,6 +4,7 @@ const initialState = {
   error: null,
   loading: false,
   userData: {},
+  favourites: [],
 };
 
 const profileReducer = (state, action) => {
@@ -18,6 +19,11 @@ const profileReducer = (state, action) => {
         ...state,
         loading: false,
         userData: action.data,
+      };
+    case actions.profile.DATA_FETCHED_FAVOURITE:
+      return {
+        ...state,
+        favourites: [...action.data],
       };
     default:
       return state;

@@ -1,14 +1,7 @@
-/* eslint-disable no-unused-vars */
-
-import useProfile from "./useProfile";
-
-export const useAvatar = (post) => {
-  const { state } = useProfile();
-
-  const isMe = post?.author?.id === state?.user?.id;
-  const avatar = isMe ? `${state?.user?.avatar}` : `${post?.author?.avatar}`;
-
-  const avatarURL = `${import.meta.env.VITE_SERVER_BASE_URL}/${avatar}`;
-
-  return { avatarURL };
+export const useAvatar = (author) => {
+  if (author) {
+    const avatarUrl = author?.avatar;
+    const firstLetter = author?.firstName[0];
+    return { avatarUrl, firstLetter };
+  }
 };

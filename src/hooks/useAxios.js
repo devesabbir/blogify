@@ -6,14 +6,14 @@ import useAuthContext from "./useAuthContext";
 import useLocalStorage from "./useLocalStorage";
 
 const useAxios = () => {
-  const { auth, setAuth } = useAuthContext();
-  const { setValue } = useLocalStorage("auth");
+  const { setAuth } = useAuthContext();
+  const { value, setValue } = useLocalStorage("auth");
 
   useEffect(() => {
     //  intercept with request
     const requestIntercept = api.interceptors.request.use(
       (config) => {
-        const authToken = auth?.token?.accessToken;
+        const authToken = value?.token?.accessToken;
         if (authToken) {
           config.headers.Authorization = `Bearer ${authToken}`;
         }
@@ -36,7 +36,7 @@ const useAxios = () => {
           (error.response.status === 403 && !originalRequest._retry)
         ) {
           originalRequest._retry = true;
-          const refreshToken = auth?.token?.refreshToken;
+          const refreshToken = value?.token?.refreshToken;
           const response = await axios.post(
             `${import.meta.env.VITE_SERVER_BASE_URL}/auth/refresh-token`,
             { refreshToken }
@@ -67,7 +67,12 @@ const useAxios = () => {
       api.interceptors.request.eject(requestIntercept);
       api.interceptors.response.eject(responseIntercept);
     };
-  }, [auth?.token?.accessToken, auth?.token?.refreshToken, setAuth, setValue]);
+  }, [
+    setAuth,
+    setValue,
+    value?.token?.accessToken,
+    value?.token?.refreshToken,
+  ]);
 
   return { api };
 };
