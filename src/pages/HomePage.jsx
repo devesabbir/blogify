@@ -6,6 +6,7 @@ import axios from "axios";
 import useBlog from "../hooks/useBlog";
 import { actions } from "./../actions/index";
 import loaderImg from "./../assets/loader.gif";
+import { toast } from "react-toastify";
 
 const blogsPerPage = 5;
 
@@ -13,7 +14,7 @@ export default function HomePage() {
   const { state, dispatch } = useBlog();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [blogMsg, setBlogMsg] = useState("");
+  // const [blogMsg, setBlogMsg] = useState("");
   const loaderRef = useRef(null);
 
   const fetchBlogs = useCallback(
@@ -30,7 +31,10 @@ export default function HomePage() {
 
         if (data?.blogs?.length === 0) {
           setHasMore(false);
-          setBlogMsg("All Blogs have been loaded");
+
+          toast("No more blogs in the API", {
+            position: "bottom-center",
+          });
         } else {
           dispatch({ type: actions.blog.DATA_FETCHED, data: data?.blogs });
           setPage((prev) => prev + 1);
@@ -63,18 +67,18 @@ export default function HomePage() {
     };
   }, [fetchBlogs, hasMore, page]);
 
-  useEffect(() => {
-    let timer;
-    if (!hasMore && blogMsg) {
-      timer = setTimeout(() => {
-        setBlogMsg("");
-      }, 2000);
-    }
+  // useEffect(() => {
+  //   let timer;
+  //   if (!hasMore && blogMsg) {
+  //     timer = setTimeout(() => {
+  //       setBlogMsg("");
+  //     }, 2000);
+  //   }
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [blogMsg, hasMore]);
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, [blogMsg, hasMore]);
 
   return (
     <Layout>
@@ -97,11 +101,11 @@ export default function HomePage() {
                 </div>
               )}
 
-              {!hasMore && blogMsg && (
+              {/* {!hasMore && blogMsg && (
                 <p className="text-red-600 text-center">
                   {blogMsg ?? state.error}
                 </p>
-              )}
+              )} */}
             </div>
             {/* Sidebar */}
             <SideBar />

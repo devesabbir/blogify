@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import useAuthContext from "../../hooks/useAuthContext";
 import formatDate from "../../utils/formateDate";
 import { useAvatar } from "../../hooks/useAvatar";
+import { useState } from "react";
 
 export default function BlogCard({ blog }) {
   const { auth } = useAuthContext();
   const { id, title, content, thumbnail, author, likes, createdAt } = blog;
   const { avatarUrl, firstLetter } = useAvatar(author);
+  const [editMode, setEditMode] = useState(false);
 
   return (
     <div className="blog-card">
@@ -63,20 +65,22 @@ export default function BlogCard({ blog }) {
         {/* action dot */}
         {auth?.user?.id === author?.id && (
           <div className="absolute right-0 top-0">
-            <button>
+            <button onClick={() => setEditMode(!editMode)}>
               <img src={threeDotsIcon} alt="3dots of Action" />
             </button>
             {/* Action Menus Popup */}
-            <div className="action-modal-container">
-              <button className="action-menu-item hover:text-lwsGreen">
-                <img src={editIcon} alt="Edit" />
-                Edit
-              </button>
-              <button className="action-menu-item hover:text-red-500">
-                <img src={deleteIcon} alt="Delete" />
-                Delete
-              </button>
-            </div>
+            {editMode && (
+              <div className="action-modal-container">
+                <button className="action-menu-item hover:text-lwsGreen">
+                  <img src={editIcon} alt="Edit" />
+                  Edit
+                </button>
+                <button className="action-menu-item hover:text-red-500">
+                  <img src={deleteIcon} alt="Delete" />
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         )}
 

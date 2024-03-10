@@ -6,13 +6,15 @@ import useAuthContext from "../../hooks/useAuthContext";
 export default function Header() {
   const { isAuthenticated, setIsAuthenticated, auth, setAuth } =
     useAuthContext();
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.clear();
     setIsAuthenticated(false);
     setAuth({});
-    navigate("/login");
+    navigate("/login", { replace: true });
+    window.location.reload();
   };
 
   const firstletter = auth?.user?.firstName[0];
