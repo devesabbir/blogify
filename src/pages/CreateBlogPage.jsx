@@ -4,6 +4,9 @@ import closeIcon from "./../assets/icons/close.svg";
 import { useForm } from "react-hook-form";
 import useAxios from "../hooks/useAxios";
 import Field from "../components/common/Field";
+import useBlog from "./../hooks/useBlog";
+import { actions } from "../actions";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function CreateBlogPage() {
   const imageInputRef = useRef(null);
@@ -15,6 +18,9 @@ export default function CreateBlogPage() {
     formState: { errors },
   } = useForm();
   const { api } = useAxios();
+  const { dispatch } = useBlog();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleImageChange = () => {
     imageInputRef.current.click();
@@ -44,7 +50,8 @@ export default function CreateBlogPage() {
     formData.append("thumbnail", image);
     const res = await api.post(`/blogs`, formData);
     if (res.status === 201) {
-      window.location = "/";
+      dispatch({ type: actions.blog.BLOG_CREATED, data: res?.data?.blog });
+      navigate(location.state);
     }
   };
 

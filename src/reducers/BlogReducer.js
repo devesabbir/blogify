@@ -54,6 +54,19 @@ export const BlogReducer = (state, action) => {
         popularBlogs: [...action.data],
       };
 
+    case actions.blog.BLOG_CREATED:
+      return {
+        ...state,
+        loading: false,
+        blogs: [...state.blogs, action.data],
+      };
+
+    case actions.blog.BLOG_DELETED:
+      return {
+        ...state,
+        blogs: state?.blogs?.filter((item) => item.id !== action?.id),
+      };
+
     default:
       return state;
   }

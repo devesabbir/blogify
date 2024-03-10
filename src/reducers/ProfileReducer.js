@@ -25,6 +25,16 @@ const profileReducer = (state, action) => {
         ...state,
         favourites: [...action.data],
       };
+    case actions.blog.BLOG_DELETED:
+      return {
+        ...state,
+        userData: {
+          ...state.userData,
+          blogs: state?.userData?.blogs?.filter(
+            (item) => item.id !== action.id
+          ),
+        },
+      };
     default:
       return state;
   }

@@ -1,6 +1,6 @@
 import siteLogo from "./../../assets/logo.svg";
 import searchIcon from "./../../assets/icons/search.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthContext from "../../hooks/useAuthContext";
 
 export default function Header() {
@@ -8,6 +8,7 @@ export default function Header() {
     useAuthContext();
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleLogout = () => {
     localStorage.clear();
@@ -37,6 +38,7 @@ export default function Header() {
             <li>
               <Link
                 to="/create-blog"
+                state={pathname}
                 className="bg-indigo-600 text-white px-6 py-2 md:py-3 rounded-md hover:bg-indigo-700 transition-all duration-200"
               >
                 Write
