@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Comment({ item }) {
   const firstLetter = item?.author?.firstName[0];
   return (
@@ -16,9 +18,12 @@ export default function Comment({ item }) {
         )}
       </div>
       <div className="w-full">
-        <h5 className="text-slate -500 font-bold">
-          {item?.author?.firstName} {item?.author?.lastName}
-        </h5>
+        <Link to={`/profile/${item?.author?.id}`}>
+          <h5 className="text-slate -500 font-bold">
+            {item?.author?.firstName} {item?.author?.lastName}
+          </h5>
+        </Link>
+
         <p className="text-slate-300">{item?.content}</p>
       </div>
     </div>
