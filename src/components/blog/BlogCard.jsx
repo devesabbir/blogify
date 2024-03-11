@@ -1,10 +1,9 @@
 import editIcon from "./../../assets/icons/edit.svg";
 import deleteIcon from "./../../assets/icons/delete.svg";
 import threeDotsIcon from "./../../assets/icons/3dots.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthContext from "../../hooks/useAuthContext";
 import formatDate from "../../utils/formateDate";
-import { useAvatar } from "../../hooks/useAvatar";
 import { useState } from "react";
 import useAxios from "../../hooks/useAxios";
 import useBlog from "../../hooks/useBlog";
@@ -14,13 +13,16 @@ import { toast } from "react-toastify";
 
 export default function BlogCard({ blog }) {
   const { auth } = useAuthContext();
-  const { id, title, content, thumbnail, author, likes, createdAt } = blog;
-  const { avatarUrl, firstLetter } = useAvatar(author);
+  const { id, title, content, thumbnail, author, likes, createdAt } =
+    blog || {};
+
   const [editMode, setEditMode] = useState(false);
   const isMe = auth?.user?.id === author?.id;
   const { api } = useAxios();
   const { dispatch } = useBlog();
   const { dispatch: profileDispatch } = useProfile();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleDeleteBlog = async () => {
     if (window.confirm("Are you sure you want to delete this blog?")) {
@@ -38,6 +40,12 @@ export default function BlogCard({ blog }) {
       }
     }
   };
+
+  const handleEdit = () => {
+    navigate(`/edit-blog/${id}`, { state: location?.pathname });
+  };
+
+  const firstLetter = author?.firstName[0];
 
   return (
     <div className="blog-card">
@@ -64,7 +72,9 @@ export default function BlogCard({ blog }) {
                   className="w-10 h-10 rounded-full"
                   src={`${
                     import.meta.env.VITE_SERVER_BASE_URL
-                  }/uploads/avatar/${isMe ? auth?.user?.avatar : avatarUrl}`}
+                  }/uploads/avatar/${
+                    isMe ? auth?.user?.avatar : author?.avatar
+                  }`}
                   alt={author?.firstName}
                 />
               ) : (
@@ -97,7 +107,10 @@ export default function BlogCard({ blog }) {
             {/* Action Menus Popup */}
             {editMode && (
               <div className="action-modal-container">
-                <button className="action-menu-item hover:text-lwsGreen">
+                <button
+                  onClick={handleEdit}
+                  className="action-menu-item hover:text-lwsGreen"
+                >
                   <img src={editIcon} alt="Edit" />
                   Edit
                 </button>

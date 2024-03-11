@@ -42,7 +42,11 @@ export default function ProfilePage() {
   let blogContent = null;
 
   if (blogs?.length === 0) {
-    blogContent = <p className="text-center">You don&apos;t have any blogs</p>;
+    blogContent = (
+      <p className="text-center text-gray-400">
+        It seems that I haven&apos;t contributed to the blogify yet.
+      </p>
+    );
   }
 
   if (blogs?.length > 0) {

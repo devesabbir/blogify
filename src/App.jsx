@@ -53,6 +53,14 @@ export default function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/edit-blog/:id"
+              element={
+                <PrivateRoute>
+                  <CreateBlogPage />
+                </PrivateRoute>
+              }
+            />
             <Route path="/blog/:id" element={<SingleBlog />} />
 
             <Route path="*" element={<>Not Found!</>} />

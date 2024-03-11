@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BlogCard from "../components/blog/BlogCard";
 import Layout from "../components/common/Layout";
 import SideBar from "../components/common/SideBar";
@@ -6,46 +6,39 @@ import axios from "axios";
 import useBlog from "../hooks/useBlog";
 import { actions } from "./../actions/index";
 import loaderImg from "./../assets/loader.gif";
-import { toast } from "react-toastify";
+import useToast from "../hooks/useToast";
 
-const blogsPerPage = 5;
+const blogsPerPage = 10;
 
 export default function HomePage() {
   const { state, dispatch } = useBlog();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  // const [blogMsg, setBlogMsg] = useState("");
+  const { toastInfo } = useToast();
   const loaderRef = useRef(null);
 
-  const fetchBlogs = useCallback(
-    async (page) => {
-      dispatch({ type: actions.blog.DATA_FETCHING });
-      try {
-        const res = await axios.get(
-          `${
-            import.meta.env.VITE_SERVER_BASE_URL
-          }/blogs?page=${page}&limit=${blogsPerPage}`
-        );
+  const fetchBlogs = async (page) => {
+    dispatch({ type: actions.blog.DATA_FETCHING });
+    try {
+      const res = await axios.get(
+        `${
+          import.meta.env.VITE_SERVER_BASE_URL
+        }/blogs?page=${page}&limit=${blogsPerPage}`
+      );
 
-        const data = res.data;
+      const data = res?.data || [];
 
-        if (data?.blogs?.length === 0) {
-          setHasMore(false);
-
-          toast("No more blogs in the API", {
-            position: "bottom-center",
-          });
-        } else {
-          dispatch({ type: actions.blog.DATA_FETCHED, data: data?.blogs });
-          setPage((prev) => prev + 1);
-        }
-      } catch (error) {
+      if (data?.blogs?.length === 0) {
         setHasMore(false);
-        dispatch({ type: actions.blog.DATA_FETCH_ERROR, error: error.message });
+        toastInfo("No more blogs in the API", { position: "bottom-center" });
+      } else {
+        dispatch({ type: actions.blog.DATA_FETCHED, data: data?.blogs });
+        setPage((prev) => prev + 1);
       }
-    },
-    [dispatch]
-  );
+    } catch (error) {
+      dispatch({ type: actions.blog.DATA_FETCH_ERROR, error: error.message });
+    }
+  };
 
   useEffect(() => {
     const onIntersection = (items) => {
@@ -65,20 +58,8 @@ export default function HomePage() {
     return () => {
       if (observer) observer.disconnect();
     };
-  }, [fetchBlogs, hasMore, page]);
-
-  // useEffect(() => {
-  //   let timer;
-  //   if (!hasMore && blogMsg) {
-  //     timer = setTimeout(() => {
-  //       setBlogMsg("");
-  //     }, 2000);
-  //   }
-
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [blogMsg, hasMore]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, page]);
 
   return (
     <Layout>
@@ -89,7 +70,7 @@ export default function HomePage() {
 
             <div className="space-y-3 md:col-span-5">
               {state?.blogs?.map((item) => (
-                <BlogCard key={item.id} blog={item} />
+                <BlogCard key={item?.id || 1} blog={item} />
               ))}
 
               {hasMore && (
@@ -100,12 +81,6 @@ export default function HomePage() {
                   <img className="w-14" src={loaderImg} alt="loader" />
                 </div>
               )}
-
-              {/* {!hasMore && blogMsg && (
-                <p className="text-red-600 text-center">
-                  {blogMsg ?? state.error}
-                </p>
-              )} */}
             </div>
             {/* Sidebar */}
             <SideBar />

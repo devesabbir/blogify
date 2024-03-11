@@ -8,6 +8,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useAxios from "./../../hooks/useAxios";
 import useBlog from "./../../hooks/useBlog";
 import { actions } from "../../actions";
+import useToast from "../../hooks/useToast";
 
 export default function BlogActions() {
   const { isAuthenticated, auth } = useAuthContext();
@@ -16,6 +17,7 @@ export default function BlogActions() {
   const { api } = useAxios();
   const { id } = useParams();
   const { state, dispatch } = useBlog();
+  const { toastInfo } = useToast();
   const { singleBlog } = state;
 
   const handleLike = async () => {
@@ -40,6 +42,11 @@ export default function BlogActions() {
         const res = await api.patch(`/blogs/${id}/favourite`);
         if (res.status === 200) {
           dispatch({ type: actions.blog.DATA_SINGLE_FETCHED, data: res?.data });
+          if (res?.data?.isFavourite) {
+            toastInfo("Added to favorites.");
+          } else {
+            toastInfo("Remove from favorites.");
+          }
         }
       } catch (error) {
         console.log(error);

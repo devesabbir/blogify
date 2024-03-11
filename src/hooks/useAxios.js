@@ -58,6 +58,11 @@ const useAxios = () => {
           return axios(originalRequest);
         }
 
+        if (error?.response?.data?.error === "User not found") {
+          setValue(null);
+          setAuth({});
+        }
+
         return Promise.reject(error);
       }
     );
