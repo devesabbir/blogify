@@ -20,7 +20,7 @@ export const BlogReducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        blogs: action.data,
+        blogs: [...state.blogs, ...action.data],
       };
 
     case actions.blog.DATA_FETCH_ERROR:
